@@ -4,6 +4,9 @@ import (
 	"fmt"
 )
 
+var axialDirections = []Hex{Hex{-1, 0}, Hex{0, -1}, Hex{+1, -1},
+	Hex{+1, 0}, Hex{0, +1}, Hex{-1, +1}}
+
 type Hex struct {
 	x int
 	y int
@@ -16,7 +19,7 @@ type Chain struct {
 
 type GameState struct {
 	hexList   map[Hex]int
-	chainList map[Hex][6]Chain
+	chainList map[Hex][]Chain
 }
 
 func (g GameState) hexGridToStringSlice() [9]string {
@@ -71,8 +74,23 @@ func (g *GameState) SetUp() {
 	}
 }
 
+// d is the direction (0 - 5) of the six cardinal hex axialDirections
+// 0 is directly to the left and proceeds clockwise
+func GetNeighbor(coord Hex, d int) (Hex, bool) {
+	neighbor := hexAdd(coord, axialDirections[d])
+	isValidHex := true
+	if neighbor.x+neighbor.y > 4 || neighbor.x+neighbor.y < -4 {
+		isValidHex = false
+	}
+	return neighbor, isValidHex
+}
+
 func (g *GameState) MakeMove(coord Hex) {
 	// update board
 	g.hexList[coord] = 1
 	// update chainList
+}
+
+func hexAdd(a, b Hex) Hex {
+	return Hex{a.x + b.x, a.y + b.y}
 }
