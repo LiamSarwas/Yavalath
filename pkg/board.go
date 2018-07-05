@@ -18,14 +18,8 @@ type Chain struct {
 }
 
 type GameState struct {
-	hexList                  map[Hex]int
-	availableMoves           map[Hex]bool
-	playerOneHorizChains     [9][]Chain
-	playerOneleftDiagChains  [9][]Chain
-	playerOnerightDiagChains [9][]Chain
-	playerTwoHorizChains     [9][]Chain
-	playerTwoleftDiagChains  [9][]Chain
-	playerTworightDiagChains [9][]Chain
+	hexList        map[Hex]int
+	availableMoves map[Hex]bool
 }
 
 func (g GameState) hexGridToStringSlice() [9]string {
@@ -86,6 +80,17 @@ func (g GameState) GetAvailableMoves() []Hex {
 	return moves
 }
 
+// d is the direction (0 - 5) of the six cardinal hex axialDirections
+// 0 is directly to the left and proceeds clockwise
+func GetNeighbor(coord Hex, d int) (Hex, bool) {
+	neighbor := hexAdd(coord, axialDirections[d])
+	isValidHex := true
+	if neighbor.x+neighbor.y > 4 || neighbor.x+neighbor.y < -4 {
+		isValidHex = false
+	}
+	return neighbor, isValidHex
+}
+
 func (g *GameState) SetUp() {
 	g.hexList = make(map[Hex]int)
 	g.availableMoves = make(map[Hex]bool)
@@ -107,22 +112,17 @@ func (g *GameState) SetUp() {
 	}
 }
 
-// d is the direction (0 - 5) of the six cardinal hex axialDirections
-// 0 is directly to the left and proceeds clockwise
-func GetNeighbor(coord Hex, d int) (Hex, bool) {
-	neighbor := hexAdd(coord, axialDirections[d])
-	isValidHex := true
-	if neighbor.x+neighbor.y > 4 || neighbor.x+neighbor.y < -4 {
-		isValidHex = false
-	}
-	return neighbor, isValidHex
-}
-
-func (g *GameState) MakeMove(coord Hex) {
+// move validation is unnecessary because the engine will
+// only pick from valid availableMoves
+func (g *GameState) MakeMove(coord Hex, player int) (int, bool) {
+	isGameOver := false
+	gameStatus := 0
 	// update board
-	g.hexList[coord] = 1
+	g.hexList[coord] = player
 	g.availableMoves[coord] = false
-	// update chainLists
+	// check if game is won (1) or lost (-1) or draw (0) for current player
+	// if game is over, gameOver = true,
+	return gameStatus, isGameOver
 }
 
 func hexAdd(a, b Hex) Hex {
