@@ -18,8 +18,14 @@ type Chain struct {
 }
 
 type GameState struct {
-	hexList   map[Hex]int
-	chainList map[Hex][]Chain
+	hexList                  map[Hex]int
+	availableMoves           map[Hex]bool
+	playerOneHorizChains     [9][]Chain
+	playerOneleftDiagChains  [9][]Chain
+	playerOnerightDiagChains [9][]Chain
+	playerTwoHorizChains     [9][]Chain
+	playerTwoleftDiagChains  [9][]Chain
+	playerTworightDiagChains [9][]Chain
 }
 
 func (g GameState) hexGridToStringSlice() [9]string {
@@ -65,12 +71,39 @@ func (g GameState) ToString() {
 	}
 }
 
-func (g *GameState) SetUp() {
-	g.hexList = make(map[Hex]int)
+func (g GameState) GetAvailableMoves() []Hex {
+	moves := []Hex{}
+	hexTest := Hex{0, 0}
 	for i := -4; i <= 4; i++ {
 		for j := -4; j <= 4; j++ {
-			g.hexList[Hex{i, j}] = 0
+			hexTest.x = i
+			hexTest.y = j
+			if g.availableMoves[hexTest] {
+				moves = append(moves, hexTest)
+			}
 		}
+	}
+	return moves
+}
+
+func (g *GameState) SetUp() {
+	g.hexList = make(map[Hex]int)
+	g.availableMoves = make(map[Hex]bool)
+	k := 0
+	for j := -4; j <= 0; j++ {
+		for i := k; i <= 4; i++ {
+			g.hexList[Hex{i, j}] = 0
+			g.availableMoves[Hex{i, j}] = true
+		}
+		k = k - 1
+	}
+	k = 3
+	for j := 1; j <= 4; j++ {
+		for i := -4; i <= k; i++ {
+			g.hexList[Hex{i, j}] = 0
+			g.availableMoves[Hex{i, j}] = true
+		}
+		k = k - 1
 	}
 }
 
@@ -88,7 +121,8 @@ func GetNeighbor(coord Hex, d int) (Hex, bool) {
 func (g *GameState) MakeMove(coord Hex) {
 	// update board
 	g.hexList[coord] = 1
-	// update chainList
+	g.availableMoves[coord] = false
+	// update chainLists
 }
 
 func hexAdd(a, b Hex) Hex {

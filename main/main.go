@@ -16,11 +16,7 @@ func main() {
 		input := pkg.GetHumanMove()
 		fmt.Println(input)
 		game.MakeMove(input)
-    for i := 0; i < 6; i++ {
-      if neighbor, ok := pkg.GetNeighbor(input, i); ok {
-        game.MakeMove(neighbor)
-      }
-    }
 		game.ToString()
+    fmt.Println(game.GetAvailableMoves())
 	}
 }
