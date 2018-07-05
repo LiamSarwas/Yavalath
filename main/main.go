@@ -23,24 +23,25 @@ func main() {
       game.ToString()
     } else {
       gameStatus, isGameOver = game.MakeMove(pkg.GetAIMove(game), 2)
+      game.ToString()
     }
     if isGameOver {
-      if gameStatus == 1 and i%2 == 0 {
+      if gameStatus == 1 && i%2 == 0 {
         fmt.Println("Player 1 is victorious!")
       }
-      if gameStatus == 1 and i%2 == 1 {
+      if gameStatus == 1 && i%2 == 1 {
         fmt.Println("Player 2 is victorious!")
       }
-      if gameStatus == -1 and i%2 == 0 {
+      if gameStatus == -1 && i%2 == 0 {
         fmt.Println("Player 2 is victorious!")
       }
-      if gameStatus == -1 and i%2 == 1 {
+      if gameStatus == -1 && i%2 == 1 {
         fmt.Println("Player 1 is victorious!")
       }
       if gameStatus == 0 {
         fmt.Println("It's a draw, you're both winners!")
       }
     }
-    i += 1
+    i = i + 1
 	}
 }

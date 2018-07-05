@@ -63,6 +63,7 @@ func (g GameState) ToString() {
 		}
 		fmt.Println()
 	}
+	fmt.Println()
 }
 
 func (g GameState) GetAvailableMoves() []Hex {
