@@ -1,4 +1,4 @@
-package pkg
+package main
 
 import (
 	"bufio"
@@ -8,7 +8,10 @@ import (
 	"strings"
 )
 
-func GetHumanMove() Hex {
+type HumanPlayer struct{}
+
+func Move(g GameState) Hex {
+	fmt.Print("Input a pair of coordinates: ")
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {

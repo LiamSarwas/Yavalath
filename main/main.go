@@ -2,46 +2,22 @@ package main
 
 import (
 	"fmt"
-  "github.com/LiamSarwas/Yavalath/pkg"
+
 )
 
 func main() {
-	game := pkg.GameState{}
-	game.SetUp()
-	game.ToString()
+  g := Game{}
+  p1 := RandomAI{}
+  p2 := RandomAI{}
+  
+  g.Initialize(p1, p2)
 
-	// start the game and loop infinitely, a win/loss will break the loop
-  i := 0
-  isGameOver := false
-  gameStatus := 0
-  for {
-    if i%2 == 0 {
-      fmt.Print("Input a pair of coordinates: ")
-      input := pkg.GetHumanMove()
-      fmt.Println(input)
-      gameStatus, isGameOver = game.MakeMove(input, 1)
-      game.ToString()
-    } else {
-      gameStatus, isGameOver = game.MakeMove(pkg.GetAIMove(game), 2)
-      game.ToString()
-    }
-    if isGameOver {
-      if gameStatus == 1 && i%2 == 0 {
-        fmt.Println("Player 1 is victorious!")
-      }
-      if gameStatus == 1 && i%2 == 1 {
-        fmt.Println("Player 2 is victorious!")
-      }
-      if gameStatus == -1 && i%2 == 0 {
-        fmt.Println("Player 2 is victorious!")
-      }
-      if gameStatus == -1 && i%2 == 1 {
-        fmt.Println("Player 1 is victorious!")
-      }
-      if gameStatus == 0 {
-        fmt.Println("It's a draw, you're both winners!")
-      }
-    }
-    i = i + 1
-	}
+  gameStatus := g.Play()
+  if gameStatus == 1 {
+    fmt.Println("Player 1 is victorious!")
+  } else if gameStatus == -1 {
+    fmt.Println("Player 2 is victorious!")
+  } else {
+    fmt.Println("It's a draw, you're both winners!")
+  }
 }

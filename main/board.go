@@ -1,4 +1,4 @@
-package pkg
+package main
 
 import (
 	"fmt"
@@ -12,14 +12,11 @@ type Hex struct {
 	y int
 }
 
-type Chain struct {
-	len int
-	val int
-}
-
 type GameState struct {
-	hexList        map[Hex]int
-	availableMoves map[Hex]bool
+	hexList           map[Hex]int
+	availableMoves    map[Hex]bool
+	numAvailableMoves int
+	currentPlayer     bool
 }
 
 func (g GameState) hexGridToStringSlice() [9]string {
@@ -92,7 +89,7 @@ func GetNeighbor(coord Hex, d int) (Hex, bool) {
 	return neighbor, isValidHex
 }
 
-func (g *GameState) SetUp() {
+func (g *GameState) Initialize() {
 	g.hexList = make(map[Hex]int)
 	g.availableMoves = make(map[Hex]bool)
 	k := 0
@@ -100,6 +97,7 @@ func (g *GameState) SetUp() {
 		for i := k; i <= 4; i++ {
 			g.hexList[Hex{i, j}] = 0
 			g.availableMoves[Hex{i, j}] = true
+			g.numAvailableMoves++
 		}
 		k = k - 1
 	}
@@ -108,22 +106,37 @@ func (g *GameState) SetUp() {
 		for i := -4; i <= k; i++ {
 			g.hexList[Hex{i, j}] = 0
 			g.availableMoves[Hex{i, j}] = true
+			g.numAvailableMoves++
 		}
 		k = k - 1
 	}
+	g.ToString()
 }
 
 // move validation is unnecessary because the engine will
 // only pick from valid availableMoves
-func (g *GameState) MakeMove(coord Hex, player int) (int, bool) {
-	isGameOver := false
-	gameStatus := 0
+func (g *GameState) MakeMove(coord Hex) int {
 	// update board
-	g.hexList[coord] = player
+	if g.currentPlayer {
+		g.hexList[coord] = 1
+	} else {
+		g.hexList[coord] = 2
+	}
 	g.availableMoves[coord] = false
-	// check if game is won (1) or lost (-1) or draw (0) for current player
-	// if game is over, gameOver = true,
-	return gameStatus, isGameOver
+	g.numAvailableMoves--
+
+	// check win loss draw conditions
+
+	// swap current player
+	g.currentPlayer = !g.currentPlayer
+
+	// if game is over send gameStatus code
+	// win is 1 or 2 for the player that won
+	// draw is 0 and -1 is game not over yet
+	if g.numAvailableMoves == 0 {
+		return Draw
+	}
+	return GameNotOver
 }
 
 func hexAdd(a, b Hex) Hex {
