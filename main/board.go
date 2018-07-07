@@ -19,6 +19,10 @@ type GameState struct {
 	currentPlayer     bool
 }
 
+func hexAdd(a, b Hex) Hex {
+	return Hex{a.x + b.x, a.y + b.y}
+}
+
 func (g GameState) hexGridToStringSlice() [9]string {
 	hexStrings := [9]string{}
 	k := 0
@@ -89,6 +93,57 @@ func GetNeighbor(coord Hex, d int) (Hex, bool) {
 	return neighbor, isValidHex
 }
 
+func (g GameState) getChainAlongAxis(coord Hex, axis int) int {
+	maxChainLength := 1
+	// look along one of the three axes 0,1,2 to see how many adjacent
+	// tiles have been played by the current player
+	currHex := coord
+	chainNotBroken := true
+	for chainNotBroken {
+		if nextNeighbor, isValidNeighbor := GetNeighbor(currHex, axis); isValidNeighbor {
+			if g.hexList[nextNeighbor] == 1 && g.currentPlayer {
+				maxChainLength++
+				currHex = nextNeighbor
+			} else if g.hexList[nextNeighbor] == 2 && !g.currentPlayer {
+				maxChainLength++
+				currHex = nextNeighbor
+			} else {
+				chainNotBroken = false
+			}
+		} else {
+			chainNotBroken = false
+		}
+	}
+	currHex = coord
+	chainNotBroken = true
+	for chainNotBroken {
+		if nextNeighbor, isValidNeighbor := GetNeighbor(currHex, axis+3); isValidNeighbor {
+			if g.hexList[nextNeighbor] == 1 && g.currentPlayer {
+				maxChainLength++
+				currHex = nextNeighbor
+			} else if g.hexList[nextNeighbor] == 2 && !g.currentPlayer {
+				maxChainLength++
+				currHex = nextNeighbor
+			} else {
+				chainNotBroken = false
+			}
+		} else {
+			chainNotBroken = false
+		}
+	}
+	return maxChainLength
+}
+
+func (g GameState) getMaxChain(coord Hex) int {
+	maxChain := 0
+	for i := 0; i <= 2; i++ {
+		if axisChain := g.getChainAlongAxis(coord, i); axisChain > maxChain {
+			maxChain = axisChain
+		}
+	}
+	return maxChain
+}
+
 func (g *GameState) Initialize() {
 	g.hexList = make(map[Hex]int)
 	g.availableMoves = make(map[Hex]bool)
@@ -126,19 +181,21 @@ func (g *GameState) MakeMove(coord Hex) int {
 	g.numAvailableMoves--
 
 	// check win loss draw conditions
-
-	// swap current player
-	g.currentPlayer = !g.currentPlayer
-
-	// if game is over send gameStatus code
-	// win is 1 or 2 for the player that won
-	// draw is 0 and -1 is game not over yet
+	maxChain := g.getMaxChain(coord)
+	if maxChain == 4 && g.currentPlayer {
+		return Player1Win
+	} else if maxChain == 4 && !g.currentPlayer {
+		return Player2Win
+	} else if maxChain == 3 && g.currentPlayer {
+		return Player2Win
+	} else if maxChain == 3 && !g.currentPlayer {
+		return Player1Win
+	}
 	if g.numAvailableMoves == 0 {
 		return Draw
 	}
-	return GameNotOver
-}
 
-func hexAdd(a, b Hex) Hex {
-	return Hex{a.x + b.x, a.y + b.y}
+	// swap current player
+	g.currentPlayer = !g.currentPlayer
+	return GameNotOver
 }
