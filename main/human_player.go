@@ -10,7 +10,7 @@ import (
 
 type HumanPlayer struct{}
 
-func Move(g GameState) Hex {
+func (h HumanPlayer) Move(g GameState) Hex {
 	fmt.Print("Input a pair of coordinates: ")
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
@@ -29,4 +29,8 @@ func Move(g GameState) Hex {
 		}
 	}
 	return Hex{ints[0], ints[1]}
+}
+
+func (h HumanPlayer) GetOppMove(oppMove Hex) {
+	//do nothing
 }

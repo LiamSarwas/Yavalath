@@ -17,11 +17,15 @@ func (m *mctsAI) Move(g GameState) Hex {
   }
 
   startTime := time.Now()
-  routineCount := 0
   for loopDuration := time.Now().Sub(startTime); loopDuration < SearchDuration; {
     state := g.Clone()
     currNode := m.root
     gameResult := GameNotOver
+
+    // check for any immediate winning moves and return it
+    if len(currNode.winningMoves) > 0 {
+      return currNode.winningMoves[0]
+    }
 
     // Select
     for {
@@ -37,6 +41,12 @@ func (m *mctsAI) Move(g GameState) Hex {
     if moves := currNode.availableMoves; len(moves) > 0 {
       moveChoice := moves[rand.Intn(len(moves))]
       gameResult = state.MakeMove(moveChoice)
+      // add a list of winning moves to shorten game search
+      if gameResult == Player1Win && currNode.playerJustMoved {
+        currNode.winningMoves = append(currNode.winningMoves, moveChoice)
+      } else if gameResult == Player2Win && !currNode.playerJustMoved {
+        currNode.winningMoves = append(currNode.winningMoves, moveChoice)
+      }
       currNode = currNode.AddChild(moveChoice, state)
     }
 
@@ -54,13 +64,13 @@ func (m *mctsAI) Move(g GameState) Hex {
     // Backpropagate
     for {
       if currNode != nil {
-        if gameResult == Player1Win && currNode.playerJustMoved {
+        if gameResult == Player1Win && !currNode.playerJustMoved {
           currNode.Update(1)
-        } else if gameResult == Player1Win && !currNode.playerJustMoved {
-          currNode.Update(0)
-        } else if gameResult == Player2Win && currNode.playerJustMoved {
+        } else if gameResult == Player1Win && currNode.playerJustMoved {
           currNode.Update(0)
         } else if gameResult == Player2Win && !currNode.playerJustMoved {
+          currNode.Update(0)
+        } else if gameResult == Player2Win && currNode.playerJustMoved {
           currNode.Update(1)
         } else if gameResult == Draw {
           currNode.Update(0)
@@ -70,7 +80,6 @@ func (m *mctsAI) Move(g GameState) Hex {
         break
       }
     }
-    routineCount++
     loopDuration = time.Now().Sub(startTime)
   }
 
@@ -84,6 +93,15 @@ func (m *mctsAI) Move(g GameState) Hex {
   }
   m.root = mostVisitedChild
   return mostVisitedChild.move
+}
+
+func (m *mctsAI) GetOppMove(oppMove Hex) {
+  for _, child := range m.root.children {
+    if child.move == oppMove {
+      m.root = child
+      break
+    }
+  }
 }
 
 func (m mctsAI) getOriginalRoot() *Node {

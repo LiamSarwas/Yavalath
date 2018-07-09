@@ -13,6 +13,7 @@ type Node struct {
   visits int
   availableMoves []Hex
   playerJustMoved bool
+  winningMoves []Hex
 }
 
 
@@ -24,6 +25,8 @@ func (n *Node) Initialize(g GameState, move Hex, parent *Node) {
     n.visits = 0
     n.availableMoves = g.GetAvailableMoves()
     n.playerJustMoved = !g.currentPlayer
+    n.winningMoves = []Hex{}
+
 }
 
 func (n *Node) GetBestChild() *Node {

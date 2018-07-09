@@ -28,6 +28,7 @@ func (game *Game) Play() int {
 			move = game.p1.Move(game.board)
 		} else {
 			move = game.p2.Move(game.board)
+			game.p1.GetOppMove(move)
 		}
 		gameResult := game.board.MakeMove(move)
 		if gameResult != GameNotOver {

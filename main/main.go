@@ -7,15 +7,15 @@ import (
 )
 
 const (
-  SearchDuration = 1*time.Second
-  ExploreFactor = 2.0
+  SearchDuration = 10*time.Second
+  ExploreFactor = 2
 )
 
 func main() {
   rand.Seed(time.Now().UnixNano())
   g := Game{}
   p1 := &mctsAI{}
-  p2 := RandomAI{}
+  p2 := HumanPlayer{}
 
   g.Initialize(p1, p2)
 

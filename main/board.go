@@ -181,9 +181,9 @@ func (g *GameState) MakeMove(coord Hex) int {
 
 	// check win loss draw conditions
 	maxChain := g.getMaxChain(coord)
-	if maxChain == 4 && !g.currentPlayer {
+	if maxChain >= 4 && !g.currentPlayer {
 		return Player1Win
-	} else if maxChain == 4 && g.currentPlayer {
+	} else if maxChain >= 4 && g.currentPlayer {
 		return Player2Win
 	} else if maxChain == 3 && !g.currentPlayer {
 		return Player2Win
