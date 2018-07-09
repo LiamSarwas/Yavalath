@@ -165,14 +165,13 @@ func (g *GameState) Initialize() {
 		}
 		k = k - 1
 	}
-	g.ToString()
 }
 
 // move validation is unnecessary because the engine will
 // only pick from valid availableMoves
 func (g *GameState) MakeMove(coord Hex) int {
 	// update board
-	if g.currentPlayer {
+	if !g.currentPlayer {
 		g.hexList[coord] = 1
 	} else {
 		g.hexList[coord] = 2
@@ -198,4 +197,27 @@ func (g *GameState) MakeMove(coord Hex) int {
 	// swap current player
 	g.currentPlayer = !g.currentPlayer
 	return GameNotOver
+}
+
+func (g *GameState) AvailableMovesCopy() map[Hex]bool {
+	newAvailableMoves := make(map[Hex]bool)
+	for k, v := range g.availableMoves {
+		newAvailableMoves[k] = v
+	}
+	return newAvailableMoves
+}
+
+func (g *GameState) Clone() GameState {
+	newBoard := GameState{}
+	newBoard.Initialize()
+	newBoard.currentPlayer = g.currentPlayer
+	newBoard.hexList = make(map[Hex]int)
+
+	for k, v := range g.hexList {
+		newBoard.hexList[k] = v
+	}
+	for k, v := range g.availableMoves {
+		newBoard.availableMoves[k] = v
+	}
+	return newBoard
 }

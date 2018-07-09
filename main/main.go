@@ -6,10 +6,14 @@ import (
   "time"
 )
 
+const (
+  SearchDuration = 1*time.Second
+)
+
 func main() {
   rand.Seed(time.Now().UnixNano())
   g := Game{}
-  p1 := RandomAI{}
+  p1 := &mctsAI{}
   p2 := RandomAI{}
 
   g.Initialize(p1, p2)
@@ -22,4 +26,5 @@ func main() {
   } else {
     fmt.Println("It's a draw, you're both winners!")
   }
+  p1.PlayerToString()
 }
