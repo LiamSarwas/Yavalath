@@ -101,10 +101,10 @@ func (g GameState) getChainAlongAxis(coord Hex, axis int) int {
 	chainNotBroken := true
 	for chainNotBroken {
 		if nextNeighbor, isValidNeighbor := GetNeighbor(currHex, axis); isValidNeighbor {
-			if g.hexList[nextNeighbor] == 1 && g.currentPlayer {
+			if g.hexList[nextNeighbor] == 1 && !g.currentPlayer {
 				maxChainLength++
 				currHex = nextNeighbor
-			} else if g.hexList[nextNeighbor] == 2 && !g.currentPlayer {
+			} else if g.hexList[nextNeighbor] == 2 && g.currentPlayer {
 				maxChainLength++
 				currHex = nextNeighbor
 			} else {
@@ -118,10 +118,10 @@ func (g GameState) getChainAlongAxis(coord Hex, axis int) int {
 	chainNotBroken = true
 	for chainNotBroken {
 		if nextNeighbor, isValidNeighbor := GetNeighbor(currHex, axis+3); isValidNeighbor {
-			if g.hexList[nextNeighbor] == 1 && g.currentPlayer {
+			if g.hexList[nextNeighbor] == 1 && !g.currentPlayer {
 				maxChainLength++
 				currHex = nextNeighbor
-			} else if g.hexList[nextNeighbor] == 2 && !g.currentPlayer {
+			} else if g.hexList[nextNeighbor] == 2 && g.currentPlayer {
 				maxChainLength++
 				currHex = nextNeighbor
 			} else {
@@ -181,13 +181,13 @@ func (g *GameState) MakeMove(coord Hex) int {
 
 	// check win loss draw conditions
 	maxChain := g.getMaxChain(coord)
-	if maxChain == 4 && g.currentPlayer {
+	if maxChain == 4 && !g.currentPlayer {
 		return Player1Win
-	} else if maxChain == 4 && !g.currentPlayer {
-		return Player2Win
-	} else if maxChain == 3 && g.currentPlayer {
+	} else if maxChain == 4 && g.currentPlayer {
 		return Player2Win
 	} else if maxChain == 3 && !g.currentPlayer {
+		return Player2Win
+	} else if maxChain == 3 && g.currentPlayer {
 		return Player1Win
 	}
 	if g.numAvailableMoves == 0 {

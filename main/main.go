@@ -8,6 +8,7 @@ import (
 
 const (
   SearchDuration = 1*time.Second
+  ExploreFactor = 2.0
 )
 
 func main() {

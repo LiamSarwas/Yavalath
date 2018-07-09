@@ -63,7 +63,7 @@ func (n *Node) removeMove(move Hex) {
 func UCTScore(n *Node) float64 {
   UCTScore := 0.0
   if n.parent != nil {
-    UCTScore = float64(n.wins)/float64(n.visits) + math.Sqrt(2.0*math.Log(float64(n.parent.visits))/float64(n.visits))
+    UCTScore = float64(n.wins)/float64(n.visits) + ExploreFactor*math.Sqrt(math.Log(float64(n.parent.visits))/float64(n.visits))
   }
   return UCTScore
 }
